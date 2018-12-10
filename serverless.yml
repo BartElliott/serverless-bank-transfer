@@ -1,0 +1,21 @@
+type: serverless-bank-transfer
+
+components:
+  balancesDb:
+    type: aws-dynamodb
+    inputs:
+      region: us-east-1
+      tables:
+        - name: balances-${self.serviceId}
+          hashKey: username
+          indexes:
+            - name: BalancesUsernameIndex
+              type: global
+              hashKey: username
+          schema:
+            username: string
+            currency_code: string
+            available_balance: number
+            active_transfers_scheduled: number
+          options:
+            timestamps: true

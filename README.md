@@ -11,4 +11,4 @@ Scala >= 1.11
 [AWS credentials](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/setup-credentials.html) for an IAM user that can create lambdas and dynamodb tables.
 
 ## Usage
-Deploy with `serverless deploy`
+Deploy with `components deploy`

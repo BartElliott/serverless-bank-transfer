@@ -1,3 +1,5 @@
 *.class
 *.log
 state.json
+.idea/
+target/

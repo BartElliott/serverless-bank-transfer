@@ -1,6 +1,30 @@
 type: serverless-bank-transfer
 
+provider:
+  name: aws
+  runtime: java8
+
+package:
+  artifact: target/scala-2.12/transfer.jar
+
+
 components:
+  # Rest API endpoints
+
+  # TODO fill these in
+
+  # Lambdas
+  create-transfer:
+    type: aws-lambda
+    inputs:
+      handler: transfer.create.Handler
+      memory: 512
+      timeout: 10
+      env:
+        balancesTableName: balances-${self.serviceId}
+        transfersTableName: transfers-${self.serviceId}
+
+  # Databases
   balancesDb:
     type: aws-dynamodb
     inputs:
@@ -17,5 +41,27 @@ components:
             currency_code: string
             available_balance: number
             active_transfers_scheduled: number
+          options:
+            timestamps: true
+
+  transfersDb:
+    type: aws-dynamodb
+    inputs:
+      region: us-east-1
+      tables:
+        - name: transfers-${self.serviceId}
+          hashKey: id
+          indexes:
+            - name: TransfersIdIndex
+              type: global
+              hashKey: id
+          schema:
+            id: string
+            status: string
+            from_username: string
+            to_username: string
+            currency_code: string
+            amount: number
+            scheduled: date
           options:
             timestamps: true

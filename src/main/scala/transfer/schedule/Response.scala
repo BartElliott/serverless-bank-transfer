@@ -1,4 +1,4 @@
-package transfer.create
+package transfer.schedule
 
 import scala.beans.BeanProperty
 

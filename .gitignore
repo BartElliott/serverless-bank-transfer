@@ -1,5 +1,10 @@
+# Serverless
+.serverless/
+
+# Scala
 *.class
 *.log
-state.json
-.idea/
 target/
+
+# Idea
+.idea/

@@ -1,67 +1,64 @@
-type: serverless-bank-transfer
+service: serverless-bank-transfer
 
 provider:
   name: aws
   runtime: java8
+  region: 'us-east-1'
+  stage: 'dev'
+  environment:
+    balancesTableName: balancesTable
+    transfersTableName: transfersTable
 
 package:
   artifact: target/scala-2.12/transfer.jar
 
+functions:
+  scheduleTransfer:
+    handler: transfer.schedule.ApiGatewayHandler
+    events:
+      - http:
+          path: transfer/schedule
+          method: post
+          cors: true
 
-components:
-  # Rest API endpoints
-
-  # TODO fill these in
-
-  # Lambdas
-  create-transfer:
-    type: aws-lambda
-    inputs:
-      handler: transfer.create.Handler
-      memory: 512
-      timeout: 10
-      env:
-        balancesTableName: balances-${self.serviceId}
-        transfersTableName: transfers-${self.serviceId}
-
-  # Databases
-  balancesDb:
-    type: aws-dynamodb
-    inputs:
-      region: us-east-1
-      tables:
-        - name: balances-${self.serviceId}
-          hashKey: username
-          indexes:
-            - name: BalancesUsernameIndex
-              type: global
-              hashKey: username
-          schema:
-            username: string
-            currency_code: string
-            available_balance: number
-            active_transfers_scheduled: number
-          options:
-            timestamps: true
-
-  transfersDb:
-    type: aws-dynamodb
-    inputs:
-      region: us-east-1
-      tables:
-        - name: transfers-${self.serviceId}
-          hashKey: id
-          indexes:
-            - name: TransfersIdIndex
-              type: global
-              hashKey: id
-          schema:
-            id: string
-            status: string
-            from_username: string
-            to_username: string
-            currency_code: string
-            amount: number
-            scheduled: date
-          options:
-            timestamps: true
+resources:
+  Resources:
+    balancesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: balances
+        AttributeDefinitions:
+          - AttributeName: username
+            AttributeType: S
+        KeySchema:
+          - AttributeName: username
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    transfersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: transfers
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+  Outputs:
+    BalancesTableArn:
+      Description: The ARN for the Balances Table
+      Value:
+        "Fn::GetAtt": [ balancesTable, Arn ]
+      Export:
+        Name: ${self:service}:dev:BalancesTableArn
+    TransfersTableArn:
+      Description: The ARN for the Transfers Table
+      Value:
+        "Fn::GetAtt": [ transfersTable, Arn ]
+      Export:
+        Name: ${self:service}:dev:TransfersTableArn

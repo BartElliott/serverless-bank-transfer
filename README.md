@@ -7,8 +7,11 @@ A rudimentary implementation of a bank transferring system, built using lambda f
 Java == 8
 Scala >= 1.11
 [serverless framework](https://serverless.com/framework/docs/getting-started/)
-[serverless components](https://github.com/serverless/components#getting-started)
 [AWS credentials](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/setup-credentials.html) for an IAM user that can create lambdas and dynamodb tables.
 
 ## Usage
-Deploy with `components deploy`
+```
+cd serverless-bank-transfer
+sbt assembly
+serverless deploy
+```

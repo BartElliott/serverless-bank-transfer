@@ -10,8 +10,11 @@ releaseNextVersion := { ver => Version(ver).map(_.bumpMinor.string).getOrElse("E
 assemblyJarName in assembly := "transfer.jar"
 
 libraryDependencies ++= Seq(
-  "com.amazonaws" % "aws-lambda-java-events" % "2.2.1",
-  "com.amazonaws" % "aws-lambda-java-core" % "1.2.0"
+  "com.amazonaws"                 % "aws-lambda-java-events"    % "2.2.1",
+  "com.amazonaws"                 % "aws-lambda-java-core"      % "1.2.0",
+  "com.gu"                        %% "scanamo"                  % "1.0.0-M8",
+  "com.fasterxml.jackson.module"  %% "jackson-module-scala"     % "2.9.7",
+  "com.fasterxml.jackson.datatype" % "jackson-datatype-joda"    % "2.9.7"
 )
 
 scalacOptions ++= Seq(

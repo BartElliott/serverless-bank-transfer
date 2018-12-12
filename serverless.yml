@@ -8,6 +8,14 @@ provider:
   environment:
     balancesTableName: balancesTable
     transfersTableName: transfersTable
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - 'dynamodb:GetItem'
+        - 'dynamodb:PutItem'
+      Resource:
+        - { "Fn::GetAtt": [balancesTable, "Arn"] }
+        - { "Fn::GetAtt": [transfersTable, "Arn"] }
 
 package:
   artifact: target/scala-2.12/transfer.jar

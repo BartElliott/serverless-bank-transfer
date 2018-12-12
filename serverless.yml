@@ -16,6 +16,12 @@ provider:
       Resource:
         - { "Fn::GetAtt": [balancesTable, "Arn"] }
         - { "Fn::GetAtt": [transfersTable, "Arn"] }
+    - Effect: Allow
+      Action:
+        - sqs:DeleteMessage
+        - sqs:ReceiveMessage
+      Resource: arn:aws:sqs:*:*:scheduledTransfers
+
 
 package:
   artifact: target/scala-2.12/transfer.jar
@@ -31,6 +37,7 @@ functions:
 
 resources:
   Resources:
+    # Dynamo db
     balancesTable:
       Type: AWS::DynamoDB::Table
       Properties:
@@ -57,6 +64,25 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
+    # SQS queues
+    scheduledTransfers:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: scheduled-transfers
+        MessageRetentionPeriod: 1209600
+        VisibilityTimeout: 60
+        RedrivePolicy:
+          deadLetterTargetArn:
+            Fn::GetAtt:
+            - scheduledTransfersDeadLetterQueue
+            - Arn
+          maxReceiveCount: 10
+    scheduledTransfersDeadLetterQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: scheduled-transfers-dead-letter-queue
+        MessageRetentionPeriod: 1209600
+
   Outputs:
     BalancesTableArn:
       Description: The ARN for the Balances Table

@@ -59,3 +59,9 @@ cancel transfer #1 (success)
 #1: $1 Alice -> Bob now (success)
 
 cancel transfer #1 (fails -- already executed)
+
+### Scenario 5 (same transfer ID re-sent)
+
+#1: $1 Alice -> Bob now (success)
+
+#2: Resend transfer #1 (failure -- transfer schedule request already processed)

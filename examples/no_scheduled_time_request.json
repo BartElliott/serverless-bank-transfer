@@ -1,0 +1,6 @@
+{
+  "fromUser": "Alice",
+  "toUser": "Bob",
+  "currencyCode": "USD",
+  "amount": 9
+}

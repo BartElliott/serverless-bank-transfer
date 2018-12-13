@@ -1,0 +1,7 @@
+{
+  "fromUser": "Alice",
+  "toUser": "Bob",
+  "currencyCode": "USD",
+  "amount": 9,
+  "scheduledTime": "2018-12-12T23:57:15.339Z"
+}

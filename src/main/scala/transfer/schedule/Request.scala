@@ -7,7 +7,7 @@ case class Request(@JsonProperty fromUser: String,
                    @JsonProperty toUser: String,
                    @JsonProperty currencyCode: String,
                    @JsonProperty amount: Double,
-                   @JsonProperty scheduledTime: DateTime = DateTime.now()
+                   @JsonProperty scheduledTime: Option[DateTime]
                   )
 
 case class ApiGatewayRequest(@JsonProperty resource: String,

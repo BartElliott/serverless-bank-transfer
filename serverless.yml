@@ -8,7 +8,13 @@ provider:
   environment:
     balancesTableName: balancesTable
     transfersTableName: transfersTable
+    scheduledTransfersName: scheduledTransfers
   iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - 'sqs:*' # TODO: spell out and limit these permissions. GetQueueDetails?
+      Resource:
+        - { "Fn::GetAtt": [ scheduledTransfers, "Arn" ] }
     - Effect: Allow
       Action:
         - 'dynamodb:GetItem'
@@ -16,12 +22,6 @@ provider:
       Resource:
         - { "Fn::GetAtt": [balancesTable, "Arn"] }
         - { "Fn::GetAtt": [transfersTable, "Arn"] }
-    - Effect: Allow
-      Action:
-        - sqs:DeleteMessage
-        - sqs:ReceiveMessage
-      Resource: arn:aws:sqs:*:*:scheduledTransfers
-
 
 package:
   artifact: target/scala-2.12/transfer.jar
@@ -96,3 +96,9 @@ resources:
         "Fn::GetAtt": [ transfersTable, Arn ]
       Export:
         Name: ${self:service}:dev:TransfersTableArn
+    ScheduledTransfersSqsArn:
+      Description: The ARN for the scheduled-transfers SQS
+      Value:
+        "Fn::GetAtt": [ scheduledTransfers, Arn ]
+      Export:
+        Name: ${self:service}:dev:ScheduledTransfersSqsArn

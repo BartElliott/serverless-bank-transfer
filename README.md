@@ -19,6 +19,12 @@ sbt assembly
 serverless deploy
 ```
 
+Then POST a request to the endpoint output by serverless, like:
+
+```
+curl -X POST https://REPLACE-ME.execute-api.us-east-1.amazonaws.com/dev/transfer/schedule --header 'content-type: application/json' --data @examples/no_scheduled_time_request.json
+```
+
 ## Test cases
 
 TODO: Implement the following integration test cases:

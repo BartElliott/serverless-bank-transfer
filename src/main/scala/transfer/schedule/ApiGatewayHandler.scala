@@ -14,7 +14,7 @@ import models.dynamo.{Balances, Transfers}
 import models.sqs.ScheduledTransferQueueMessage
 import org.joda.time.{DateTime, Seconds}
 import services.dynamo.{BalancesService, TransfersService}
-import services.sqs.QueueService
+import services.sqs.ScheduledTransferQueueService
 
 import scala.collection.JavaConverters
 
@@ -29,7 +29,8 @@ class ApiGatewayHandler extends RequestStreamHandler {
 
   val balancesService: BalancesService = new BalancesService(dynamoClient)
   val transfersService: TransfersService = new TransfersService(dynamoClient)
-  val scheduledTransfersQueueService: QueueService = new QueueService(sqsClient, "scheduled-transfers")
+  val scheduledTransfersQueueService: ScheduledTransferQueueService =
+    new ScheduledTransferQueueService(sqsClient, "scheduled-transfers")
 
 
   def handleRequest(input: InputStream, output: OutputStream, context: Context): Unit = {
@@ -69,6 +70,7 @@ class ApiGatewayHandler extends RequestStreamHandler {
   }
 
   def validateRequest(req: Request): Unit = {
+    if (req.amount <= 0) throw new NegativeTransferException
     validateScheduledForTheFuture(req.scheduledTime.getOrElse(DateTime.now))
     val oldFromBalance = balancesService.get(req.fromUser) match {
       case Some(balances: Balances) => balances.availableBalance

@@ -1,6 +1,9 @@
 package services.dynamo
 
+import java.util.UUID
+
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB
+import com.amazonaws.services.dynamodbv2.model.DeleteItemResult
 import models.dynamo.Transfers
 import com.gu.scanamo._
 import com.gu.scanamo.syntax._
@@ -19,5 +22,9 @@ class TransfersService(client: AmazonDynamoDB) {
 
   def put(transfers: Transfers): Option[Transfers] = {
     Scanamo.exec(client)(transfersTable.put(transfers)).flatMap(_.toOption)
+  }
+
+  def delete(id: UUID): DeleteItemResult = {
+    Scanamo.exec(client)(transfersTable.delete('id -> id.toString))
   }
 }

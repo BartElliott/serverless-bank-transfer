@@ -6,7 +6,7 @@ A rudimentary implementation of a bank transferring system, built using lambda f
 
 Java == 8
 
-Scala >= 1.11
+Scala == 1.12
 
 [serverless framework](https://serverless.com/framework/docs/getting-started/)
 

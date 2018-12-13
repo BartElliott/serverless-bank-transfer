@@ -15,10 +15,12 @@ provider:
         - 'sqs:*' # TODO: spell out and limit these permissions. GetQueueDetails?
       Resource:
         - { "Fn::GetAtt": [ scheduledTransfers, "Arn" ] }
+        - { "Fn::GetAtt": [ executedTransfers, "Arn" ] }
     - Effect: Allow
       Action:
         - 'dynamodb:GetItem'
         - 'dynamodb:PutItem'
+        - 'dynamodb:DeleteItem'
       Resource:
         - { "Fn::GetAtt": [balancesTable, "Arn"] }
         - { "Fn::GetAtt": [transfersTable, "Arn"] }
@@ -34,6 +36,15 @@ functions:
           path: transfer/schedule
           method: post
           cors: true
+  executeTransfer:
+    handler: transfer.execute.Handler
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - scheduledTransfers
+              - Arn
+          batchSize: 10
 
 resources:
   Resources:
@@ -64,6 +75,7 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
+
     # SQS queues
     scheduledTransfers:
       Type: AWS::SQS::Queue
@@ -81,6 +93,24 @@ resources:
       Type: AWS::SQS::Queue
       Properties:
         QueueName: scheduled-transfers-dead-letter-queue
+        MessageRetentionPeriod: 1209600
+
+    executedTransfers:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: executed-transfers
+        MessageRetentionPeriod: 1209600
+        VisibilityTimeout: 60
+        RedrivePolicy:
+          deadLetterTargetArn:
+            Fn::GetAtt:
+            - executedTransfersDeadLetterQueue
+            - Arn
+          maxReceiveCount: 10
+    executedTransfersDeadLetterQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: executed-transfers-dead-letter-queue
         MessageRetentionPeriod: 1209600
 
   Outputs:
@@ -102,3 +132,9 @@ resources:
         "Fn::GetAtt": [ scheduledTransfers, Arn ]
       Export:
         Name: ${self:service}:dev:ScheduledTransfersSqsArn
+    ExecutedTransfersSqsArn:
+      Description: The ARN for the executed-transfers SQS
+      Value:
+        "Fn::GetAtt": [ executedTransfers, Arn ]
+      Export:
+        Name: ${self:service}:dev:ExecutedTransfersSqsArn

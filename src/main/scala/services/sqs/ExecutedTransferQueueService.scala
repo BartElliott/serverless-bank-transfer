@@ -7,6 +7,8 @@ import com.fasterxml.jackson.datatype.joda.JodaModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import models.sqs.ExecutedTransferQueueMessage
 
+// TODO: Have this and ScheduledTransferQueueService both extend an abstract class QueueService that takes a
+// parameter for sendMessage
 class ExecutedTransferQueueService(amazonSQS: AmazonSQS, queueName: String) {
   val queueUrl: String = amazonSQS.createQueue(queueName).getQueueUrl
 

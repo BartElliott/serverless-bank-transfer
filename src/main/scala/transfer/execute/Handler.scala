@@ -26,20 +26,20 @@ class Handler extends RequestHandler[SQSEvent, Unit] {
 
   val executedTransfersQueueService: ExecutedTransferQueueService = new ExecutedTransferQueueService(sqsClient, "executed-transfers")
 
-  /*
-     * Check the request's status in the Transfers table
-     * If 'scheduled':
-     *   Remove the request from the scheduled Table
-     *   Add the 'amount' to the 'toUser' in the Balances table
-     *
-     * If 'cancelled':
-     *   Remove the request from the scheduled Table
-     *   Refund the 'amount' back to the 'fromUser' in the Balance table
-     *
-     * If 'completed':
-     *   Remove the request from the scheduled Table
-     *
-     */
+  /* TODO
+   * Check the request's status in the Transfers table
+   * If 'scheduled':
+   *   Remove the request from the scheduled Table
+   *   Add the 'amount' to the 'toUser' in the Balances table
+   *
+   * If 'cancelled':
+   *   Remove the request from the scheduled Table
+   *   Refund the 'amount' back to the 'fromUser' in the Balance table
+   *
+   * If 'completed':
+   *   Remove the request from the scheduled Table
+   *
+   */
   def handleRequest(input: SQSEvent, context: Context): Unit = {
     scala.collection.JavaConverters.asScalaBuffer(input.getRecords).map { sqsMessage =>
       val req: ScheduledTransferQueueMessage = mapper.readValue(sqsMessage.getBody, classOf[ScheduledTransferQueueMessage])

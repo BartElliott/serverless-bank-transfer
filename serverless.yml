@@ -36,6 +36,12 @@ functions:
           path: transfer/schedule
           method: post
           cors: true
+  # TODO:
+  # Add routes to handle:
+  # GET transfer/{id] -- get transfer request from Transfers table
+  # GET transfer -- get list of all transfer requests
+  # DELETE transfer/{id} -- delete transfer request from Transfers table
+
   executeTransfer:
     handler: transfer.execute.Handler
     events:

@@ -9,6 +9,7 @@ import com.gu.scanamo._
 import com.gu.scanamo.syntax._
 import org.joda.time.{DateTime, DateTimeZone}
 
+// TODO: Make this be able to handle the Async version of AmazonDynamoDB, and then deal with Futures
 class TransfersService(client: AmazonDynamoDB) {
   // This is needed for scanamo to understand the Transfers Datetimes
   implicit val jodaStringFormat = DynamoFormat.coercedXmap[DateTime, String, IllegalArgumentException](
